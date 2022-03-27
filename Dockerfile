@@ -93,6 +93,9 @@ RUN composer create-project "${SKELETON} ${SYMFONY_VERSION}" . --stability=$STAB
 	composer clear-cache
 
 ###> recipes ###
+###> doctrine/doctrine-bundle ###
+RUN docker-php-ext-install pdo pdo_mysql
+###< doctrine/doctrine-bundle ###
 ###< recipes ###
 
 COPY . .
