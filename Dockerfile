@@ -6,6 +6,7 @@
 # https://docs.docker.com/engine/reference/builder/#understand-how-arg-and-from-interact
 ARG PHP_VERSION=8.1
 ARG CADDY_VERSION=2
+ARG NODE_VERSION=14.18.1
 
 # "php" stage
 FROM php:${PHP_VERSION}-fpm-alpine AS symfony_php
@@ -97,6 +98,9 @@ RUN composer create-project "${SKELETON} ${SYMFONY_VERSION}" . --stability=$STAB
 RUN docker-php-ext-install pdo pdo_mysql
 ###< doctrine/doctrine-bundle ###
 ###< recipes ###
+
+RUN apk --no-cache add --update nodejs=${NODE_VERSION}; \
+	apk --no-cache add --update npm;
 
 COPY . .
 
