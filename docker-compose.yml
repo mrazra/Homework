@@ -61,11 +61,12 @@ services:
     image: mysql:${MYSQL_VERSION:-8.0}
     restart: unless-stopped
     tty: true
+    security_opt:
+      - seccomp:unconfined
     volumes:
       # - db-data:/var/lib/mysql
       # You may use a bind-mounted host directory instead, so that it is harder to accidentally remove the volume and lose all your data!
       - ./docker/db/data:/var/lib/mysql:rw
-      - ./docker/db/:/docker-entrypoint-initdb.d
     container_name: db-mysql
     ports:
       - 5432:5432
