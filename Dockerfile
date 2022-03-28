@@ -7,6 +7,27 @@
 ARG PHP_VERSION=8.1
 ARG CADDY_VERSION=2
 ARG NODE_VERSION=14.18.1
+ARG ALPINE_VERSION=3.14
+
+# "node" stage
+FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} AS symfony_assets_builder
+
+RUN apk add --no-cache \
+		git \
+	;
+
+WORKDIR /srv/app
+
+RUN mkdir public
+
+COPY package.json yarn.lock ./
+
+RUN yarn install
+
+COPY assets assets/
+COPY webpack.config.js ./
+
+RUN yarn build
 
 # "php" stage
 FROM php:${PHP_VERSION}-fpm-alpine AS symfony_php
@@ -100,7 +121,8 @@ RUN docker-php-ext-install pdo pdo_mysql
 ###< recipes ###
 
 RUN apk --no-cache add --update nodejs=${NODE_VERSION}; \
-	apk --no-cache add --update npm;
+	apk --no-cache add --update npm; \
+	apk --no-cache add --update yarn --repository=http://dl-cdn.alpinelinux.org/alpine/v${ALPINE_VERSION}/community
 
 COPY . .
 
