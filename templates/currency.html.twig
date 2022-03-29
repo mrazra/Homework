@@ -1,0 +1,40 @@
+{% extends "base.html.twig" %}
+
+{% block title %}
+    Exchange Rates
+{% endblock %}
+
+{% block body %}
+    <h1>Euro {{ currency }} exchange reference rates</h1>
+    <p class="lead">{{ currency }} unit for 1 euro</p>
+    <div>
+        <canvas id="chart" height="100" data-date="{{ exchangeRate|keys|join(',') }}"
+                data-rate="{{ exchangeRate|join(',') }}" data-currency="{{ currency }}">
+        </canvas>
+    </div>
+    <table id="exchange_rate_currency_table" class="display table-striped" style="width:100%">
+        <thead>
+            <tr>
+                {% for date, rate in exchangeRate %}
+                    <th>{{ date }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% for date, rate in exchangeRate %}
+                        <td>{{ rate }}</td>
+                {% endfor %}
+            </tr>
+    </table>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    {{ encore_entry_script_tags('exchange_rate_currency') }}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+{% endblock %}
