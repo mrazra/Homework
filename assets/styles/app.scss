@@ -1,6 +1,20 @@
+$primary: #0060F5;
+
 @import "~bootstrap/scss/bootstrap";
 @import "~datatables.net-bs4/css/dataTables.bootstrap4.css";
 
-#exchange_rate_table {
-    width: 100%;
+body {
+    color: #051D59;
+
+    #exchange_rate_table {
+        width: 100%;
+    }
+
+    .currency {
+        color: $primary;
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
 }

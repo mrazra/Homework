@@ -5,39 +5,45 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Euro foreign exchange reference rates</h1>
-    <p class="lead">Currency unit for 1 euro</p>
-    <table id="exchange_rate_table" class="display table-striped" style="width:100%">
-        <thead>
-            <tr>
-                <th>Currency</th>
-                {% for date in dates %}
-                    <th>{{ date }}</th>
+
+    <div class="card p-5">
+        <h1 class="card-title">Euro foreign exchange reference rates</h1>
+        <p class="card-text text-muted ps-3">Currency unit for 1 euro</p>
+
+        <div class="py-3 table-responsive">
+            <table id="exchange_rate_table" class="table table-hover display py-3" style="width:100%">
+                <thead class="table-light">
+                    <tr>
+                        <th>Currency</th>
+                        {% for date in dates %}
+                            <th>{{ date }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                {% for currency, rates in exchangeRate %}
+                    <tr onclick="window.location='{{ path('currency', {code: currency}) }}';" class="cursor-pointer">
+                        <td>
+                            <span class="currency">
+                                {{ currency }}
+                            </span>
+                        </td>
+                        {% for rate in rates %}
+                            <td>{{ rate }}</td>
+                        {% endfor %}
+                    </tr>
                 {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-        {% for currency, rates in exchangeRate %}
-            <tr>
-                <td>
-                    <a href="{{ path('currency', {code: currency}) }}">
-                        {{ currency }}
-                    </a>
-                </td>
-                {% for rate in rates %}
-                    <td>{{ rate }}</td>
-                {% endfor %}
-            </tr>
-        {% endfor %}
-        <tfoot>
-        <tr>
-            <th>Currency</th>
-            {% for date in dates %}
-                <th>{{ date }}</th>
-            {% endfor %}
-        </tr>
-        </tfoot>
-    </table>
+                <tfoot>
+                <tr>
+                    <th>Currency</th>
+                    {% for date in dates %}
+                        <th>{{ date }}</th>
+                    {% endfor %}
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
 
 {% endblock %}
 

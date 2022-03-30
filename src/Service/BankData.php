@@ -2,12 +2,16 @@
 
 namespace App\Service;
 
+use App\Entity\ExchangeRate;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Serializer\Encoder\DecoderInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class BankData
 {
-    public function __construct(private HttpClientInterface $client, private DecoderInterface $decoder)
+    public function __construct(private HttpClientInterface $client,
+                                private DecoderInterface $decoder,
+                                private EntityManagerInterface $entityManager)
     {
     }
 
@@ -47,6 +51,41 @@ class BankData
         return $data;
     }
 
+    public function fetchBankDataForDate($date): ?array
+    {
+        $dateTime = new \DateTime($date);
+        $date = $dateTime->format('Ymd');
+
+        $response = $this->client->request(
+            'GET',
+            'https://www.bank.lv/vk/ecb.xml?date='.$date
+        );
+
+        if ($response->getStatusCode() != 200)
+        {
+            return null;
+        }
+
+        $xmlData = $this->decoder->decode($response->getContent(), 'xml');
+
+        if (!isset($xmlData['Currencies']['Currency']) || !isset($xmlData['Date']))
+        {
+            return null;
+        }
+
+        $data[0]['dateTime'] = new \DateTime($xmlData['Date']);
+
+        foreach ($xmlData['Currencies']['Currency'] as $item)
+        {
+            $data[0]['items'][] = [
+                'currency' => $item['ID'],
+                'rate'     => $item['Rate'],
+            ];
+        }
+
+        return $data;
+    }
+
     private function convertToArray($string): array
     {
         $separator = ' ';
@@ -56,5 +95,24 @@ class BankData
         {
             return !isset($item[1]) ? '' : ['currency' => $item[0], 'rate' => $item[1]];
         }, array_chunk(explode($separator, $string), $count)));
+    }
+
+    public function uploadToDatabase($bankData)
+    {
+        foreach ($bankData as $data)
+        {
+            foreach ($data['items'] as $item)
+            {
+                $entity = new ExchangeRate();
+                $entity->setIdExchangeRate($data['dateTime']->format('ymd').'-'.$item['currency']);
+                $entity->setCurrency($item['currency']);
+                $entity->setDate($data['dateTime']);
+                $entity->setRate($item['rate']);
+
+                $this->entityManager->merge($entity);
+                $this->entityManager->flush();
+            }
+        }
+
     }
 }

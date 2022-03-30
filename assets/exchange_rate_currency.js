@@ -13,6 +13,7 @@ $(document).ready(function() {
         label: ctx.attr('data-currency'),
         data: ctx.attr('data-rate').split(","),
         borderColor: 'rgb(0, 96, 245)',
+        backgroundColor: 'rgb(0, 96, 245)',
         tension: 0.1
       }],
     },

@@ -13,9 +13,14 @@
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
     </head>
+
     <body>
         <div class="container">
-            {% block body %}{% endblock %}
+            <div class="row">
+                <main class="col-12 bd-content p-5">
+                    {% block body %}{% endblock %}
+                </main>
+            </div>
         </div>
     </body>
 </html>

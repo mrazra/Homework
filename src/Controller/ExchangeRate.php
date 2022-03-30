@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ExchangeRateList extends AbstractController
+class ExchangeRate extends AbstractController
 {
     #[Route('/', name: 'homepage')]
     public function index(ExchangeRateRepository $exchangeRateRepository): Response

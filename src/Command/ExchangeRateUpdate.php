@@ -26,6 +26,8 @@ class ExchangeRateUpdate extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        $output->writeln('Fetching data');
+
         $bankData = $this->bankData->fetchBankData();
 
         if (empty($bankData))
@@ -35,19 +37,13 @@ class ExchangeRateUpdate extends Command
             return Command::FAILURE;
         }
 
-        foreach ($bankData as $data)
+        try
         {
-            foreach ($data['items'] as $item)
-            {
-                $entity = new ExchangeRate();
-                $entity->setIdExchangeRate($data['dateTime']->format('ymd').'-'.$item['currency']);
-                $entity->setCurrency($item['currency']);
-                $entity->setDate($data['dateTime']);
-                $entity->setRate($item['rate']);
-
-                $this->entityManager->merge($entity);
-                $this->entityManager->flush();
-            }
+            $this->bankData->uploadToDatabase($bankData);
+        }
+        catch (\Exception $e)
+        {
+            return Command::FAILURE;
         }
 
         $output->writeln('Exchange Rates have been updated');
