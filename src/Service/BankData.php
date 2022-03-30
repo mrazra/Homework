@@ -22,22 +22,19 @@ class BankData
             'https://www.bank.lv/vk/ecb_rss.xml'
         );
 
-        if ($response->getStatusCode() != 200)
-        {
+        if ($response->getStatusCode() != 200) {
             return null;
         }
 
         $xmlData = $this->decoder->decode($response->getContent(), 'xml');
 
-        if (!isset($xmlData['channel']))
-        {
+        if (!isset($xmlData['channel'])) {
             return null;
         }
 
         $data = [];
 
-        foreach ($xmlData['channel']['item'] as $item)
-        {
+        foreach ($xmlData['channel']['item'] as $item) {
             $dateTime = new \DateTime($item['pubDate']);
 
             $items = $this->convertToArray($item['description']);
@@ -58,25 +55,22 @@ class BankData
 
         $response = $this->client->request(
             'GET',
-            'https://www.bank.lv/vk/ecb.xml?date='.$date
+            'https://www.bank.lv/vk/ecb.xml?date=' . $date
         );
 
-        if ($response->getStatusCode() != 200)
-        {
+        if ($response->getStatusCode() != 200) {
             return null;
         }
 
         $xmlData = $this->decoder->decode($response->getContent(), 'xml');
 
-        if (!isset($xmlData['Currencies']['Currency']) || !isset($xmlData['Date']))
-        {
+        if (!isset($xmlData['Currencies']['Currency']) || !isset($xmlData['Date'])) {
             return null;
         }
 
         $data[0]['dateTime'] = new \DateTime($xmlData['Date']);
 
-        foreach ($xmlData['Currencies']['Currency'] as $item)
-        {
+        foreach ($xmlData['Currencies']['Currency'] as $item) {
             $data[0]['items'][] = [
                 'currency' => $item['ID'],
                 'rate'     => $item['Rate'],
@@ -91,20 +85,17 @@ class BankData
         $separator = ' ';
         $count = 2;
 
-        return array_filter(array_map(function($item) use ($separator)
-        {
+        return array_filter(array_map(function ($item) use ($separator) {
             return !isset($item[1]) ? '' : ['currency' => $item[0], 'rate' => $item[1]];
         }, array_chunk(explode($separator, $string), $count)));
     }
 
     public function uploadToDatabase($bankData)
     {
-        foreach ($bankData as $data)
-        {
-            foreach ($data['items'] as $item)
-            {
+        foreach ($bankData as $data) {
+            foreach ($data['items'] as $item) {
                 $entity = new ExchangeRate();
-                $entity->setIdExchangeRate($data['dateTime']->format('ymd').'-'.$item['currency']);
+                $entity->setIdExchangeRate($data['dateTime']->format('ymd') . '-' . $item['currency']);
                 $entity->setCurrency($item['currency']);
                 $entity->setDate($data['dateTime']);
                 $entity->setRate($item['rate']);
@@ -113,6 +104,5 @@ class BankData
                 $this->entityManager->flush();
             }
         }
-
     }
 }

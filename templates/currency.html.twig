@@ -1,7 +1,7 @@
 {% extends "base.html.twig" %}
 
 {% block title %}
-    Exchange Rates
+    {{ currency }} Exchange Rates
 {% endblock %}
 
 {% block body %}
@@ -30,7 +30,7 @@
                 <tbody>
                     <tr>
                         {% for date, rate in exchangeRate %}
-                                <td class="text-center">{{ rate }}</td>
+                            <td class="text-center">{{ rate }}</td>
                         {% endfor %}
                     </tr>
             </table>

@@ -1,7 +1,7 @@
 import $ from "jquery";
 import Chart from 'chart.js/auto';
 
-$(document).ready(function() {
+$(document).ready(function () {
 
   const ctx = $('#chart');
 
@@ -18,4 +18,4 @@ $(document).ready(function() {
       }],
     },
   });
-} );
+});

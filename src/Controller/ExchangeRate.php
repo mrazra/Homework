@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use App\Repository\ExchangeRateRepository;
@@ -16,8 +17,7 @@ class ExchangeRate extends AbstractController
 
         $exchangeRateSorted = $dates = $currencyRates = $currencies = [];
 
-        foreach ($exchangeRates as $exchangeRate)
-        {
+        foreach ($exchangeRates as $exchangeRate) {
             $currencyRates[$exchangeRate->getDate()->format('Y-m-d')][$exchangeRate->getCurrency()] = $exchangeRate->getRate();
             $dates[$exchangeRate->getDate()->format('Y-m-d')] = $exchangeRate->getDate()->format('d.m.Y');
             $currencies[$exchangeRate->getCurrency()] = $exchangeRate->getCurrency();
@@ -26,10 +26,8 @@ class ExchangeRate extends AbstractController
         ksort($dates);
         sort($currencies);
 
-        foreach ($dates as $date => $showDate)
-        {
-            foreach ($currencies as $currency)
-            {
+        foreach ($dates as $date => $showDate) {
+            foreach ($currencies as $currency) {
                 $exchangeRateSorted[$currency][] = $currencyRates[$date][$currency] ?? '-';
             }
         }
@@ -47,8 +45,7 @@ class ExchangeRate extends AbstractController
 
         $currencyRates = [];
 
-        foreach ($exchangeRates as $exchangeRate)
-        {
+        foreach ($exchangeRates as $exchangeRate) {
             $currencyRates[$exchangeRate->getDate()->format('Y-m-d')] = $exchangeRate->getRate();
         }
 

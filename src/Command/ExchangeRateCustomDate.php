@@ -11,11 +11,10 @@ use Symfony\Component\Console\Input\InputArgument;
 
 #[AsCommand(
     name: 'app:exchange-rates-custom-date',
-    description: 'Get currency exchange data for a set date from API and save to database',
+    description: 'Get currency exchange data for a set date and save to database',
     aliases: ['app:exchange-rates-custom-date'],
     hidden: false
 )]
-
 class ExchangeRateCustomDate extends Command
 {
     public function __construct(private BankData $bankData)
@@ -31,29 +30,25 @@ class ExchangeRateCustomDate extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln([
-            'Fetching data for: '.$input->getArgument('date'),
+            'Fetching data for: ' . $input->getArgument('date'),
             'Request for a date on a holiday will return data for the previous workday'
         ]);
 
         $bankData = $this->bankData->fetchBankDataForDate($input->getArgument('date'));
 
-        if (empty($bankData))
-        {
+        if (empty($bankData)) {
             $output->writeln("Bank API error");
 
             return Command::FAILURE;
         }
 
-        try
-        {
+        try {
             $this->bankData->uploadToDatabase($bankData);
-        }
-        catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             return Command::FAILURE;
         }
 
-        $output->writeln('Exchange Rates for '.$input->getArgument('date').' have been updated');
+        $output->writeln('Exchange Rates for ' . $input->getArgument('date') . ' have been updated');
 
         return Command::SUCCESS;
     }
